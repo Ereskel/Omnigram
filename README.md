@@ -17,14 +17,14 @@ OmnideskAPI - веб API. Работает путем отправки сфор�
 
 В данном репозитории представлен пример реализации базового функционала с возможностью последующего расширения возможностей.
 
+
+
+
 Ссылкки на документацию:
 
 OmnideskAPI - https://omnidesk.ru/api/introduction#intro
-
 Telethon - https://docs.telethon.dev/en/stable/
-
 requests - https://requests.readthedocs.io/en/latest/
-
 TelegramBotApi - https://core.telegram.org/bots/api
 asyncio - https://docs.python.org/3/library/asyncio.html
 Flask - https://flask.palletsprojects.com/en/2.3.x/
