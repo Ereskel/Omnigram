@@ -2,10 +2,11 @@ OmnideskAPI + TelegramBotApi
 
 ТЗ: создать скрипт, который обрабатывает, отправленные на телеграм-аккаунт (важно - не бот) сообщения, и формирует новое обращение в панеле сотрудника CRM-системы Omnidesk.
 
-Технологический стек:  - OmnideskAPI
-                       - Telethon
-                       - request (aiohttp)
-                       - asyncio
+Технологический стек:  
+                      - OmnideskAPI
+                      - Telethon
+                      - request (aiohttp)
+                      - asyncio
 
 
 Работа скрипта базируется на выстраивании взаимодействия между OmnideskAPI и TelegramBotAPI.
