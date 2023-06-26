@@ -1,0 +1,136 @@
+import asyncio
+import threading
+import time
+import requests
+from telethon.sync import TelegramClient, events
+from telethon.sessions import StringSession
+from flask import Flask, request
+
+# session_string - позволяет осуществлять аутентификацию в телеграм аккаунте без ввода номера и получения кода
+domain = ''
+staff_email = ''
+api_key = ''
+
+api_id = 
+api_hash = ''
+phone_number = ''  # Здесь должен быть ваш номер телефона
+session_string = ''
+
+
+
+# Блок создания обращения.
+# Формирование URL - запроса
+def omnicdesk_request(url, method, headers=None, data=None):
+    base_url = f'https://{domain}.omnidesk.ru/api'  # Базовый URL для OmnicDesk API
+    full_url = base_url + url
+    response = requests.request(method, full_url, headers=headers, json=data, auth=(staff_email, api_key))
+    return response
+
+
+# Обработка сообщение в ТГ
+async def handle_incoming_messages(event):
+    message = event.message
+    send_message_to_omnicdesk(message.text)
+    get_request()
+
+
+# Функция для отправки сообщения в OmnicDesk и создания тиккета
+def send_message_to_omnicdesk(message):
+    url = '/cases.json'
+    headers = {'Content-Type': 'application/json'}
+    data = {
+        "case": {
+            "user_email": "test228123123123@gmail.com",
+            "user_full_name": "User's full name",
+            "subject": "Тест228",
+            "content": "Тест228",
+            "language_id": 2,
+            "custom_fields": {
+                "cf_25": "some text",
+                "cf_30": "another field"
+            },
+            "labels": [101, 102]
+        }
+    }
+    response = omnicdesk_request(url, 'POST', headers=headers, data=data)
+    if response.status_code == 201:
+        print('Обращение успешно создано в OmnicDesk')
+    else:
+        print('Ошибка при создании обращения в OmnicDesk:', response.text)
+
+
+
+# Блок получения всех созданных обращений.
+def get_requests(url, method, headers=None, data=None):
+    base_url = f'https://{domain}.omnidesk.ru/api'  # Базовый URL для OmnicDesk API
+    full_url = base_url + url
+    response = requests.request(method, full_url, headers=headers, json=data, auth=(staff_email, api_key))
+    return response
+
+
+def get_request():
+    url = '/cases.json'
+    response = get_requests(url, 'GET')
+    if response.status_code == 201:
+        print('Данные получены')
+        return response
+    else:
+        print('Ошибка получения данных', response.text)
+
+
+# Блок выбора кейса
+def omnicdesk_answer(url, method, headers=None, data=None):
+    base_url = f'https://{domain}.omnidesk.ru/api/cases/{id}'  # Базовый URL для OmnicDesk API
+    full_url = base_url + url
+    response = requests.request(method, full_url, headers=headers, json=data, auth=(staff_email, api_key))
+    return response
+
+
+async def add_answer(message):
+    url = '/messages.json'
+    headers = {'Content-Type': 'application/json'}
+    data = {
+        "message": {
+            "user_id": "18772600",
+            "content": "текст сообщения пользователя"
+        }
+    }
+    response = omnicdesk_answer(url, 'POST', headers=headers, data=data)
+    if response.status_code == 201:
+        print('Сообщение успешно отправлено.')
+    else:
+        print('Сообщение не отправлено.', response.text)
+
+
+
+# Создание эндпоинта
+app = Flask(__name__)
+
+
+@app.route('/', methods=['POST'])
+def handle_webhook():
+    data = request.get_json()  # Извлекаем данные из JSON-тела запроса
+    # Обрабатываем полученные данные
+    process_webhook_data(data)
+    return 'OK'
+
+
+def process_webhook_data(data):
+    pass
+
+
+async def main():
+    async with TelegramClient(StringSession(session_string), api_id, api_hash) as client:
+        client.add_event_handler(handle_incoming_messages, events.NewMessage(incoming=True, outgoing=False))
+        await client.run_until_disconnected()
+
+
+def run_server():
+    app.run(host='0.0.0.0', port=80, ssl_context='adhoc', threaded=True)
+
+
+if __name__ == '__main__':
+    flask_thread = threading.Thread(target=run_server)
+    flask_thread.start()
+    asyncio.run(main())
+    flask_thread.join()
